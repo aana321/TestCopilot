@@ -1,76 +1,138 @@
-# TestCopilot
-This is AI powered Test Copilot which helps you to generate test cases, gives you information about your APIs services, your backend architecture and many other technical details about your internal project. The one thing you can do is to train this AI from external data and it will provide you the answers you asked for.
-#FrontEnd
-# Getting Started with Create React App
+Accelerate your development and testing process with our cutting-edge AI-powered assistant! Whether you need guidance on application testing or insights on retail analytics, our chatbot has got you covered. With a simple file upload feature and lightning-fast responses, we make quality assurance a breeze.
+The project has two parts
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+catalyst -  Rattle Copilot Backend, backend tech stack includes (python, openai, FastAPI, redis, unicorn, pandas)
+aurora - Rattle Copilot Interface, frontend built with react-app
 
-## Available Scripts
 
-In the project directory, you can run:
+Local Setup of Catalyst
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+If you don’t have Python installed, install it from here. Recommended Version (3.9.6)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
 
-### `npm test`
+Clone this repository.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
+Navigate into the project directory:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+$ cd rattle-reliability-copilot/catalyst
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Create a new virtual environment:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+$ python -m venv venv
+$ . venv/bin/activate
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
-## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Install the requirements:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+$ pip install -r requirements.txt
 
-### Code Splitting
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
 
-### Analyzing the Bundle Size
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
 
-### Making a Progressive Web App
+Data Ingestion
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
 
-### Advanced Configuration
+We're going to use Redis as our database for both document contents and the vector embeddings. You will need the full Redis Stack to enable use of Redisearch, which is the module that allows semantic search.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+$ docker run -d --name redis-stack -p 6379:6379 -p 8001:8001 redis/redis-stack:latest 
 
-### Deployment
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
 
-### `npm run build` fails to minify
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Setup your data from datum folder
 
-### Backend
 
+Run the script
+
+$ python trainer.py  
+
+
+
+
+Note: Index create takes little time, the script might stop saying 'Not there yet. Creating'. In such a case, rerun the script.
+
+Starting the backend server
+
+
+Run the http server
+
+$ uvicorn main:app --reload
+
+
+or
+
+$ python main.py
+
+
+
+Swagger Doc
+http://127.0.0.1:8000/docs#/default 
+http://127.0.0.1:8000/redoc
+You can use the following curl to test your backend server:
+
+   $ curl --location --request POST 'http://localhost:8000/get_answer' \
+   --header 'accept: application/json' \
+   --header 'Content-Type: application/json' \
+   --data-raw '{"prompt":"Help me with payment related test cases"}'
+   ```
+   
+
+
+
+
+
+
+Copilot Interface with Streamlit
+To test your backend code, if you have trouble deploying aurora, you can continue testing your code with streamlit. This gives a basic user interface.
+
+Test your bot
+
+
+$ streamlit run bot.py
+
+
+
+Local Setup of Aurora
+
+Starting the frontend server
+
+Head to your project directory
+
+
+   $ cd rattle-reliability-copilot/aurora
+
+
+
+Start the server
+
+
+   $ npm install
+   $ npm start
+
+
+
+
+Head to http://localhost:3000/
+
+
+Build the app
+
+
+
+   $  npm run build
+
+
+
+Points to note
+
+Please ingest data using catalyst/trainer.py before proceeding with the local setup
+Dockerfile for frontend and backend are in progress for building images for containerised deployment
+Go through catalyst/helperBot.ipynb for basic understanding of the application
